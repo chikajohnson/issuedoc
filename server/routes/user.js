@@ -1,7 +1,7 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
-const { parishAdmin, superAdmin } = require('../utils/roles');
+const { admin, developer } = require('../utils/roles');
 
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.patch(
 );
 router.delete('/deleteMe', userController.deleteMe);
 
-router.use(authController.restrictTo(superAdmin, parishAdmin));
+router.use(authController.restrictTo(admin, developer));
 
 router
   .route('/')

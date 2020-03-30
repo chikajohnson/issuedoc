@@ -1,7 +1,7 @@
 const express = require('express');
 const parishController = require('../controllers/parishController');
 const authController = require('../controllers/authController');
-const { stationAdmin, parishAdmin, superAdmin } = require('../utils/roles');
+const { admin } = require('../utils/roles');
 
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router
 
 // Protect all routes after this middleware
 router.use(authController.protect);
-router.use(authController.restrictTo(stationAdmin, parishAdmin, superAdmin));
+router.use(authController.restrictTo(admin));
 
 router
   .route('/')

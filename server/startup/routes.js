@@ -1,8 +1,6 @@
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
 
-
-
 const user = require('../routes/user');
 const parish = require('../routes/parish');
 const auth = require('../routes/auth');
