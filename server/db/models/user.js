@@ -7,20 +7,16 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 
 const userSchema = new mongoose.Schema({
-  lastName: {
+  fullName: {
     type: String,
-    required: [true, "Last name is required"],
+    required: [true, "full name is required"],
     maxlength: 50
   },
-  firstName: {
+  userName: {
     type: String,
-    required: [true, "First name is required"],
+    required: [true, "user name is required"],
+    unique: true,
     maxlength: 50
-  },
-  otherNames: {
-    type: String,
-    required: false,
-    maxlength: 100
   },
   email: {
     type: String,
@@ -31,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: [true, "Phone is required"],
+    required: [true, "Phone number is required"],
     minlength: 6,
     maxlength: 15,
     unique: true
@@ -39,30 +35,6 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
     default: 'default.jpg'
-  },
-  gender: {
-    type: String,
-    required: [true, "Specify your gender"],
-    enum: ["female", "male"],
-  },
-  placeOfBirth: {
-    type: String,
-    required: [true, "Place of birth is required"],
-  },
-  dateOfBirth: {
-    type: Date,
-    required: [true, "Date of birth is required"],
-  },
-  parish: {
-    type: String,
-    required: [true, "Enter the name of your parish"],
-  },
-  station: {
-    type: String,
-    required: false,
-  },
-  diocessse: {
-    type: String
   },
   password: {
     type: String,
@@ -84,13 +56,13 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
-  activated : {type: Boolean, default: false},
+  activated : {type: Boolean, default: true},
   activationToken : String,
   activationExpires : Date,
   role: {
     type: String,
-    enum: ["clergy", "lay", "user", "admin", "globalAdmin", "developer"],
-    default: "lay"
+    enum: ["admin", "developer"],
+    default: "developer"
   },
   active: {
     type: Boolean,
@@ -179,25 +151,6 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 24 * 1000;
 
   return resetToken;
-};
-
-userSchema.methods.createActivationToken = function () {
-  const token = crypto.randomBytes(32).toString('hex');
-
-  this.activationToken = crypto
-    .createHash('sha256')
-    .update(token)
-    .digest('hex');
-
-  this.activationExpires = Date.now() + 10 * 60 * 24 * 1000;
-
-  return token;
-};
-
-userSchema.methods.generateActivationCode = function () {
-  //generate 6 character random code
-  const code = crypto.randomBytes(6).toString();
-  return code;
 };
 
 const User = mongoose.model(modelObj.user, userSchema);
