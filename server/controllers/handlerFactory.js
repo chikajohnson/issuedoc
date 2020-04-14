@@ -24,7 +24,13 @@ exports.updateOne = (Model, uniqueProperties) =>
         let prop = properties[i];
         let exists = await Model.findOne({ name: convertToLower(req.body[prop]), _id: {$ne: req.params.id} });
         if (exists) {
+
+          if(prop.includes('.')){
+            let splittedProp = prop.split('.');           
+            return next(new AppError(`'${req.body[splittedProp[0]][0][splittedProp[1]]}' already exists.`, 400));
+          }
           return next(new AppError(`'${req.body[prop]}' already exists.`, 400));
+
         }
       }
     }
@@ -56,6 +62,7 @@ exports.createOne = (Model, uniqueProperties) =>
         let prop = properties[i];
 
         let exists = await Model.findOne({ name: convertToLower(req.body[prop]) });
+        
 
         if (exists) {
           return next(new AppError(`'${req.body[prop]}' already exists.`, 400));
@@ -73,7 +80,7 @@ exports.createOne = (Model, uniqueProperties) =>
 
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
-    let query = Model.findOne({ _id: req.params.id, active: true });
+    let query = Model.findOne({ _id: req.params.id});
     if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
 
@@ -92,7 +99,7 @@ exports.getAll = (Model, populateOptions) =>
 
     let filter = { active: true };
 
-    const features = new APIFeatures(Model.find(filter).populate(populateOptions), req.query)
+    const features = new APIFeatures(Model.find().populate(populateOptions), req.query)
       .filter()
       .sort()
       .limitFields()

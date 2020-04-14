@@ -1,21 +1,22 @@
 const express = require('express');
 const issueController = require('../controllers/issueController');
 const authController = require('../controllers/authController');
-const { admin } = require('../utils/roles');
+const { admin , developer} = require('../utils/roles');
 
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(issueController.getAllIssue);
+  .get(issueController.getAllIssues);
 router
   .route('/:id')
   .get(issueController.getIssue);
 
-// Protect all routes after this middleware
+// Protect all routes after this middlewarey
 router.use(authController.protect);
-router.use(authController.restrictTo(admin));
+router.use(authController.restrictTo(admin, developer));
+
 
 router
   .route('/')

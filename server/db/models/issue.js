@@ -12,7 +12,8 @@ const IssueSchema = new mongoose.Schema({
   },
   project: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: modelObj.project
+    ref: modelObj.project,
+    required: [true, "project is required"]
   },
   description: {
     type: String,
@@ -41,8 +42,7 @@ const IssueSchema = new mongoose.Schema({
   ],
   resolved: {
     type: Boolean,
-    default: true,
-    select: false
+    default: false
   },
   resolvedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -50,11 +50,15 @@ const IssueSchema = new mongoose.Schema({
   },
   closed: {
     type: Boolean,
-    default: true,
-    select: false
+    default: false,
   },
   closedOn: {
     type: Date
+  },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false
   },
   isSystemDefined: {
     type: Boolean,

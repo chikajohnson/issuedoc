@@ -8,8 +8,7 @@ const mongoose = require("mongoose");
         },
         published: {
           type: Boolean,
-          default: true,
-          select: false
+          default: true
         },
         issue: {
           type: mongoose.Schema.Types.ObjectId,
