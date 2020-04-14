@@ -90,7 +90,7 @@ const userSchema = new mongoose.Schema({
     toObject: { virtuals: true }
   });
 
-userSchema.plugin(uniqueValidator);
+userSchema.plugin(uniqueValidator, {message: "{PATH} '{VALUE}' already exists, try again with another value"});
 
 
 userSchema.pre('save', async function (next) {

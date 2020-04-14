@@ -5,7 +5,6 @@ const APIFeatures = require('./../utils/apiFeatures');
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
-
     if (!doc) {
       return next(new AppError('No document found with that ID', 404));
     }
@@ -16,8 +15,20 @@ exports.deleteOne = Model =>
     });
   });
 
-exports.updateOne = Model =>
+exports.updateOne = (Model, uniqueProperties) =>
   catchAsync(async (req, res, next) => {
+
+    if (uniqueProperties) {      
+      const properties = uniqueProperties.split(" ");
+      for (let i = 0; i < properties.length; i++) {
+        let prop = properties[i];
+        let exists = await Model.findOne({ name: convertToLower(req.body[prop]), _id: {$ne: req.params.id} });
+        if (exists) {
+          return next(new AppError(`'${req.body[prop]}' already exists.`, 400));
+        }
+      }
+    }
+
     req.body.updatedAt = Date.now();
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -35,8 +46,23 @@ exports.updateOne = Model =>
     });
   });
 
-exports.createOne = Model =>
+exports.createOne = (Model, uniqueProperties) =>
   catchAsync(async (req, res, next) => {
+
+    if (uniqueProperties) {
+      
+      const properties = uniqueProperties.split(" ");
+      for (let i = 0; i < properties.length; i++) {
+        let prop = properties[i];
+
+        let exists = await Model.findOne({ name: convertToLower(req.body[prop]) });
+
+        if (exists) {
+          return next(new AppError(`'${req.body[prop]}' already exists.`, 400));
+        }
+      }
+    }
+
     const doc = await Model.create(req.body);
 
     res.status(201).json({
@@ -45,10 +71,10 @@ exports.createOne = Model =>
     });
   });
 
-exports.getOne = (Model, popOptions) =>
+exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
-    let query = Model.findOne({ _id : req.params.id, active: true });
-    if (popOptions) query = query.populate(popOptions);
+    let query = Model.findOne({ _id: req.params.id, active: true });
+    if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
 
     if (!doc) {
@@ -61,12 +87,12 @@ exports.getOne = (Model, popOptions) =>
     });
   });
 
-exports.getAll = (Model, popOptions) =>
+exports.getAll = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
 
-    let filter = {active: true};
+    let filter = { active: true };
 
-    const features = new APIFeatures(Model.find(filter).populate(popOptions), req.query)
+    const features = new APIFeatures(Model.find(filter).populate(populateOptions), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -81,3 +107,10 @@ exports.getAll = (Model, popOptions) =>
       data: doc
     });
   });
+
+  function convertToLower(item){
+    if (item) {
+      return item.toLowerCase();
+    }
+    return null;
+  }

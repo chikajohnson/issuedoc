@@ -35,7 +35,7 @@ const createSendToken = (user, statusCode, req, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  //check if user with email already exists
+
   if (await User.findOne({ email: req.body.email })) {
     return next(
       new AppError(`User with email '${req.body.email}' already exists`, 400))
@@ -48,7 +48,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     return next(
       new AppError(`User with username '${req.body.userName}' already exists`, 400));
   }
-  //check if user with ophonenumber already exists
 
   const newUser = await User.create(req.body);
 
@@ -71,6 +70,8 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email });
 
+  console.log(user);
+  
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
@@ -95,7 +96,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-    console.log("token", req.headers);
+    console.log("token", token);
 
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
@@ -109,7 +110,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 2) Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  console.log("decoded", decoded);
 
   // 3) Check if user still exists
   const currentUser = await User.findById(decoded.id);
@@ -131,6 +131,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
+  req.body.createdBy = currentUser._id;
   res.locals.user = currentUser;
   next();
 });
@@ -169,8 +170,9 @@ exports.isLoggedIn = async (req, res, next) => {
 exports.restrictTo = (...roles) => {
 
   return (req, res, next) => {
-    roles.push(developer)
-    console.log("roles", roles, req.user.role);
+    if (!roles.includes(developer)) {
+      roles.push(developer)
+    }
 
     if (!roles.includes(req.user.role)) {
       return next(
@@ -183,7 +185,7 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  
+
   if (!req.body.email) return next(new AppError('Please provide an email address', 400));
   // 1) Get user based on POSTed email
   const user = await User.findOne({ email: req.body.email });

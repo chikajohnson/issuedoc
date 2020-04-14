@@ -2,8 +2,8 @@ const winston = require('winston');
 
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
-  winston.info(err.message);
+  console.log(err);
+  winston.info(err);
   process.exit(1);
 });
 

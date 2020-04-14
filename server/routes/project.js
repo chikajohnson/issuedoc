@@ -1,5 +1,5 @@
 const express = require('express');
-const parishController = require('../controllers/parishController');
+const projectController = require('../controllers/projectController');
 const authController = require('../controllers/authController');
 const { admin } = require('../utils/roles');
 
@@ -8,10 +8,10 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(parishController.getAllParish);
+  .get(projectController.getAllProject);
 router
   .route('/:id')
-  .get(parishController.getParish);
+  .get(projectController.getProject);
 
 // Protect all routes after this middleware
 router.use(authController.protect);
@@ -19,10 +19,10 @@ router.use(authController.restrictTo(admin));
 
 router
   .route('/')
-  .post(parishController.createParish);
+  .post(projectController.createProject);
 router
   .route('/:id')
-  .patch(parishController.updateParish)
-  .delete(parishController.deleteParish);
+  .patch(projectController.updateProject)
+  .delete(projectController.deleteProject);
 
 module.exports = router;
