@@ -1,7 +1,8 @@
-const Comment = require('../db/models/project');
+const Comment = require('../db/models/comment');
 const factory = require('./handlerFactory');
 const populateoptions = [
-    { path: 'createdBy', select: '-role -isSSystemDefined -activated -active -phoneNumber -fullName' }
+    { path: 'createdBy', select: '-role -isSSystemDefined -activated -active -phoneNumber -fullName' },
+    {path: "issue", select: 'title project.name dsecription resources.name resources.link id'}
 ];
 
 exports.createComment = factory.createOne(Comment);

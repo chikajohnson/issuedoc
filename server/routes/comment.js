@@ -1,7 +1,7 @@
 const express = require('express');
 const commentController = require('../controllers/commentController');
 const authController = require('../controllers/authController');
-const { admin } = require('../utils/roles');
+const { admin, developer } = require('../utils/roles');
 
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router
 
 // Protect all routes after this middleware
 router.use(authController.protect);
-router.use(authController.restrictTo(admin));
+router.use(authController.restrictTo(admin, developer));
 
 router
   .route('/')
