@@ -6,8 +6,6 @@ const populateoptions = [
 ];
 
 const uniqueProperties = "title";
-console.log("get issues");
-
 
 exports.createIssue = factory.createOne(Issue, uniqueProperties);
 

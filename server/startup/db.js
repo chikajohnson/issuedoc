@@ -17,8 +17,6 @@ module.exports = function () {
       db = process.env.DB_LOCAL;
       break;
   }
-console.log(db);
-
   mongoose
     .connect(db, {
       useNewUrlParser: true,

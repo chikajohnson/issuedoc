@@ -3,5 +3,6 @@ module.exports = {
     project: 'Project',
     issue: 'Issue',
     issueresouce: 'IssueResource',
-    comment: 'Comment'
+    comment: 'Comment',
+    auditTrail: 'AuditTrail'
 };

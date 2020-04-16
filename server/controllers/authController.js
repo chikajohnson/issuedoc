@@ -70,7 +70,6 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email });
 
-  console.log(user);
   
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
@@ -89,8 +88,7 @@ exports.logout = (req, res) => {
 };
 
 exports.protect = catchAsync(async (req, res, next) => {
-  console.log("calling protect");
-  
+ 
   // 1) Getting token and check of it's there
   let token;
   if (
@@ -98,7 +96,6 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-    console.log("token", token);
 
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
