@@ -1,6 +1,6 @@
 const winston = require('winston');
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err);
   winston.info(err);
@@ -17,7 +17,7 @@ const server = app.listen(port, () => {
   winston.info(`Listening on dedicated port  ${port}...`);
 });
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
   console.log(err.name, err.message);
   winston.info(err);

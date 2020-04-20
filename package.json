@@ -4,10 +4,7 @@
   "description": "document every issues and how it was resolved",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "dev": "nodemon server.js",
-    "start:prod": "NODE_ENV=production nodemon server.js",
-    "debug": "ndb server.js",
+    "start": "node server.js",
     "seed": "node seeds/seed.js",
     "test": "jest --watch"
   },

@@ -25,8 +25,11 @@ dotenv.config({
 
 app.enable('trust proxy');
 
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
+app.use('/public', express.static(`${process.cwd()}/public`));
+
+app.get('/', (_req, res) => {
+  res.status(200).json({ message: 'Server is running', status: 200 });
+});
 
 
 // 1) GLOBAL MIDDLEWARES
