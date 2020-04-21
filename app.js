@@ -8,20 +8,17 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
-// const bodyParser = require('body-parser');
 const compression = require('compression');
 const cors = require('cors');
 
 const AppError = require('./utils/appError');
-const auditTrail = require("./middleware/auditlogger");
+const auditTrail = require('./middleware/auditlogger');
 const globalErrorHandler = require('./controllers/errorController');
 
 // Start express app
 const app = express();
 
-dotenv.config({
-  path: './config/.env'
-});
+dotenv.config();
 
 app.enable('trust proxy');
 
@@ -32,7 +29,6 @@ app.get('/', (_req, res) => {
 });
 
 
-// 1) GLOBAL MIDDLEWARES
 // Implement CORS
 app.use(cors());
 // Access-Control-Allow-Origin *
@@ -99,9 +95,9 @@ app.use((req, res, next) => {
 // 3) ROUTES AND OTHER STARTUP CONFIGURATION
 app.use(auditTrail());
 
-require("./startup/db")();
-require("./startup/logging")();
-require("./startup/routes")(app);
+require('./startup/db')();
+require('./startup/logging')();
+require('./startup/routes')(app);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

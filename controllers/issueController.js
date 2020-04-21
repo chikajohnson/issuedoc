@@ -1,11 +1,12 @@
 const Issue = require('../db/models/issue');
 const factory = require('./handlerFactory');
+
 const populateoptions = [
-    { path: 'createdBy', select: '-role -isSystemDefined -activated -active -phoneNumber -fullName -createdAt' },
-    { path: 'project', select: '-role -isSystemDefined -activated -active -createdBy -createdAt -id' }
+  { path: 'createdBy', select: '-role -isSystemDefined -activated -active -phoneNumber -fullName -createdAt' },
+  { path: 'project', select: '-role -isSystemDefined -activated -active -createdBy -createdAt -id' }
 ];
 
-const uniqueProperties = "title";
+const uniqueProperties = 'title';
 
 exports.createIssue = factory.createOne(Issue, uniqueProperties);
 

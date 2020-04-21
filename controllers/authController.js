@@ -6,11 +6,9 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { developer } = require('../utils/roles');
 
-const signToken = id => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
-  });
-};
+const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, {
+  expiresIn: process.env.JWT_EXPIRES_IN
+});
 
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
@@ -35,29 +33,30 @@ const createSendToken = (user, statusCode, req, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-
   if (await User.findOne({ email: req.body.email })) {
     return next(
-      new AppError(`User with email '${req.body.email}' already exists`, 400))
+      new AppError(`User with email '${req.body.email}' already exists`, 400)
+    );
   }
-  else if (await User.findOne({ phoneNumber: req.body.phoneNumber })) {
+  if (await User.findOne({ phoneNumber: req.body.phoneNumber })) {
     return next(
-      new AppError(`User with email '${req.body.phoneNumber}' already exists`, 400));
+      new AppError(`User with email '${req.body.phoneNumber}' already exists`, 400)
+    );
   }
-  else if (await User.findOne({ userName: req.body.userName })) {
+  if (await User.findOne({ userName: req.body.userName })) {
     return next(
-      new AppError(`User with username '${req.body.userName}' already exists`, 400));
+      new AppError(`User with username '${req.body.userName}' already exists`, 400)
+    );
   }
 
   const newUser = await User.create(req.body);
 
   await newUser.save({ validateBeforeSave: false });
 
-  //await sendActivationToken(newUser.email, newUser.firstName, activationURL);
+  // await sendActivationToken(newUser.email, newUser.firstName, activationURL);
 
   createSendToken(newUser, 201, req, res);
   await newUser.save({ validateBeforeSave: false });
-
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -70,7 +69,7 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email });
 
-  
+
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
@@ -84,19 +83,17 @@ exports.logout = (req, res) => {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true
   });
-  res.status(200).json({ status: 'success', message: "Successfully logged out" });
+  res.status(200).json({ status: 'success', message: 'Successfully logged out' });
 };
 
 exports.protect = catchAsync(async (req, res, next) => {
- 
   // 1) Getting token and check of it's there
   let token;
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization
+    && req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
@@ -166,25 +163,21 @@ exports.isLoggedIn = async (req, res, next) => {
   next();
 };
 
-exports.restrictTo = (...roles) => {
+exports.restrictTo = (...roles) => (req, res, next) => {
+  if (!roles.includes(developer)) {
+    roles.push(developer);
+  }
 
-  return (req, res, next) => {
-    if (!roles.includes(developer)) {
-      roles.push(developer)
-    }
+  if (!roles.includes(req.user.role)) {
+    return next(
+      new AppError('You do not have permission to perform this action', 403)
+    );
+  }
 
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new AppError('You do not have permission to perform this action', 403)
-      );
-    }
-
-    next();
-  };
+  next();
 };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-
   if (!req.body.email) return next(new AppError('Please provide an email address', 400));
   // 1) Get user based on POSTed email
   const user = await User.findOne({ email: req.body.email });
@@ -201,7 +194,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
-      resetToken: resetToken
+      resetToken
     });
   } catch (err) {
     user.passwordResetToken = undefined;

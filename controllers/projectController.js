@@ -1,10 +1,11 @@
 const Project = require('../db/models/project');
 const factory = require('./handlerFactory');
+
 const populateoptions = [
-    { path: 'createdBy', select: '-password -photo -role -isSSystemDefined -activated -active -phoneNumber -fullName' }
+  { path: 'createdBy', select: '-password -photo -role -isSSystemDefined -activated -active -phoneNumber -fullName' }
 ];
 
-const uniqueProperties = "name";
+const uniqueProperties = 'name';
 
 exports.createProject = factory.createOne(Project, uniqueProperties);
 

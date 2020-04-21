@@ -1,20 +1,24 @@
 const winston = require('winston');
 const mongoose = require('mongoose');
 
-module.exports = function () {
-  let db = "";
+
+module.exports = () => {
+  let db = '';
   switch (process.env.NODE_ENV) {
-    case "production":
-      db = process.env.DB_LOCAL;
+    case 'production':
+      db = process.env.DATABASE_URI;
       break;
-    case "testing":
-      db = process.env.DB_TEST;
+    case 'testing':
+      db = 'mongodb://localhost/issuedoc';
       break;
-    case "development":
-      db = process.env.DB_LOCAL;
+    case 'development':
+      db = process.env.DATABASE_URI;
+      break;
+    case 'staging':
+      db = process.env.DATABASE_URI;
       break;
     default:
-      db = process.env.DB_LOCAL;
+      db = process.env.DATABASE_URI;
       break;
   }
   mongoose
@@ -26,7 +30,6 @@ module.exports = function () {
       autoIndex: false
     })
     .then(() => {
-      winston.log("info", 'db connection successful!');
+      winston.log('info', 'db connection successful!');
     });
-}
-
+};
