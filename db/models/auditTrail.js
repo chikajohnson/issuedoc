@@ -1,5 +1,5 @@
+const mongoose = require('mongoose');
 const modelObj = require('./allModels');
-const mongoose = require("mongoose");
 
 const auditTrailSchema = new mongoose.Schema({
   user: String,
@@ -8,7 +8,7 @@ const auditTrailSchema = new mongoose.Schema({
   actionType: String,
   currentValue: String,
   previousValue: String,
-  endPoint:String,
+  endPoint: String,
   fullUrl: String,
   isSystemDefined: {
     type: Boolean,
@@ -23,12 +23,12 @@ const auditTrailSchema = new mongoose.Schema({
     default: Date.now
   }
 },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-  });
+{
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
 
-auditTrailSchema.pre(/^find/, function (next) {
+auditTrailSchema.pre(/^find/, (next) => {
   // this points to the current query
   next();
 });
